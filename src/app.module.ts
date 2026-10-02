@@ -12,7 +12,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     ObserveModule.forRoot({
       appKey: process.env.OBSERVE_APP_KEY ?? '',
       appSecret: process.env.OBSERVE_APP_SECRET ?? '',
-      runtimeMetrics: !Boolean(process.versions?.['webcontainer']),
+      runtimeMetrics: !process.versions?.['webcontainer'],
       serviceId: 'portail-facturation-gwenael-cruz',
     }),
   ],
