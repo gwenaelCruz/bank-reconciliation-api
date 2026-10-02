@@ -1,10 +1,9 @@
 services:
   web:
-    image: node:22.23.3-alpine
+    build: ./docker/node
     ports:
       - "3000:3000"
     volumes:
       - ./:/var/www/app
     working_dir:
       /var/www/app
-    command: ["npm", "run", "start:dev"]
