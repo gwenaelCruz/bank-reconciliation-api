@@ -36,6 +36,8 @@ Given a list of banking transactions, as well as these checkpoints, an algorithm
 
 ## Technical spec:
 
+### API modelisation
+
 #### Request
 `POST /movements/validation`
 ```json
@@ -59,4 +61,61 @@ Error
   "message": "Validation failed",
   "reasons": [{ … }]
 }
+```
+
+### Setting up project
+
+Project is built with [Nest JS](https://nestjs.com/) framework and uses [Node.js](https://nodejs.org) to run.
+You can either install and run Node.js locally or use the provided [Docker](https://www.docker.com/) image.
+
+Install project dependencies by running:
+
+**Locally :**
+```bash
+# locally
+npm install
+
+# Docker
+docker compose run --rm web npm install
+```
+
+### Running the server
+
+**Locally :**
+```bash
+# locally
+npm run start
+# in dev mode watching file changes
+npm run start:dev
+
+# Docker - already runs in dev mode
+docker compose up -d
+```
+
+You can then navigate to http://localhost:3000/
+
+### Testing
+
+```bash
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
+
+# test coverage
+$ npm run test:cov
+```
+
+Alternatively, add `docker compose run --rm web` in front of each above command to run inside the provided
+Docker container
+
+### Lint
+
+```bash
+# locally
+npm run lint
+
+# Docker
+docker compose run --rm web npm run lint
 ```
