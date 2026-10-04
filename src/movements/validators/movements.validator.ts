@@ -3,7 +3,9 @@ import BalanceType from '#app/movements/types/balance.type.js';
 import toCentHelper from '#app/movements/helpers/to-cent.helper.js';
 import ValidationIssueType from "#app/movements/types/validation-issue.type.js";
 import ValidationIssueEnum from "#app/movements/enums/validation-issue.enum.js";
+import {Injectable} from "@nestjs/common";
 
+@Injectable()
 class MovementsValidator {
   public checkForDuplicates(movements: { id: number }[]): ValidationIssueType|null {
     const occurrences: { [key: string]: number } = {};

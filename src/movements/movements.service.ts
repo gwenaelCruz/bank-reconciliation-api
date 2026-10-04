@@ -2,7 +2,9 @@ import MovementType from '#app/movements/types/movement.type.js';
 import BalanceType from '#app/movements/types/balance.type.js';
 import MovementsValidator from '#app/movements/validators/movements.validator.js';
 import ValidationIssueType from "#app/movements/types/validation-issue.type.js";
+import {Injectable} from "@nestjs/common";
 
+@Injectable()
 class MovementsService {
   constructor(private validator: MovementsValidator) {}
 
