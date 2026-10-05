@@ -2,8 +2,27 @@ import MovementsService from '#app/movements/movements.service.js';
 import MovementsValidator from '#app/movements/validators/movements.validator.js';
 import ValidationIssueEnum from "#app/movements/enums/validation-issue.enum.js";
 import ValidationIssueType from "#app/movements/types/validation-issue.type.js";
+import {Test, TestingModule} from "@nestjs/testing";
+import {Mocked} from "vitest";
 
 describe('Movement service', () => {
+  let movementsValidator: Mocked<MovementsValidator>;
+  let movementsService: MovementsService;
+
+  beforeEach(async () => {
+    const app: TestingModule = await Test.createTestingModule({
+      providers: [
+        MovementsService,
+        {
+          provide: MovementsValidator,
+          useValue: { checkForDuplicates: vi.fn(), checkForBalanceDiscrepancy: vi.fn() },
+        }
+      ],
+    }).compile();
+
+    movementsService = app.get<MovementsService>(MovementsService);
+    movementsValidator = app.get<Mocked<MovementsValidator>>(MovementsValidator);
+  });
 
   describe('Movements and balance validation', () => {
     it('Should pass validation when no validation returns no issue', () => {
@@ -40,19 +59,15 @@ describe('Movement service', () => {
         { balance: 15.4, date: new Date(2026, 8, 25) },
         { balance: 24.1, date: new Date(2026, 9, 1) },
       ];
-
-      const ValidatorMock = vi.fn(MovementsValidator);
-      const mockedValidator = new ValidatorMock();
-      ValidatorMock.prototype.checkForDuplicates = vi.fn((_) => null);
-      ValidatorMock.prototype.checkForBalanceDiscrepancy = vi.fn((_) => []);
-
-      const movementsService = new MovementsService(mockedValidator);
+      movementsValidator.checkForDuplicates.mockReturnValue(null);
+      movementsValidator.checkForBalanceDiscrepancy.mockReturnValue([]);
 
       // when
       const { validated, reasons } = movementsService.validate(movements, balances);
 
       // then
-      expect(ValidatorMock.prototype.checkForDuplicates).toHaveBeenCalledWith(movements);
+      expect(movementsValidator.checkForDuplicates).toHaveBeenCalledWith(movements);
+      expect(movementsValidator.checkForBalanceDiscrepancy).toHaveBeenCalledWith(movements, balances);
       expect(validated).toBe(true);
       expect(reasons.length).toEqual<number>(0);
     });
@@ -78,18 +93,15 @@ describe('Movement service', () => {
       const validationIssue =
         { type: ValidationIssueEnum.DUPLICATE_MOVEMENTS, message: 'Test message' }
       ;
-      const ValidatorMock = vi.fn(MovementsValidator);
-      ValidatorMock.prototype.checkForDuplicates = vi.fn((_) => validationIssue);
-      ValidatorMock.prototype.checkForBalanceDiscrepancy = vi.fn((_) => []);
-
-      const mockedValidator = new ValidatorMock();
-      const movementsService = new MovementsService(mockedValidator);
+      movementsValidator.checkForDuplicates.mockReturnValue(validationIssue);
+      movementsValidator.checkForBalanceDiscrepancy.mockReturnValue([]);
 
       // when
       const { validated, reasons } = movementsService.validate(movements, balances);
 
       // then
-      expect(ValidatorMock.prototype.checkForDuplicates).toHaveBeenCalledWith(movements);
+      expect(movementsValidator.checkForDuplicates).toHaveBeenCalledWith(movements);
+      expect(movementsValidator.checkForBalanceDiscrepancy).toHaveBeenCalledWith(movements, balances);
       expect(validated).toBe(false);
       expect(reasons).toEqual<ValidationIssueType[]>([validationIssue]);
     });
@@ -115,17 +127,14 @@ describe('Movement service', () => {
       const validationIssues = [
         { type: ValidationIssueEnum.BALANCE_DISCREPANCY, message: 'Test message' }
       ];
-      const ValidatorMock = vi.fn(MovementsValidator);
-      ValidatorMock.prototype.checkForDuplicates = vi.fn((_) => null);
-      ValidatorMock.prototype.checkForBalanceDiscrepancy = vi.fn((_, __) => validationIssues);
-      const mockedValidator = new ValidatorMock();
-      const movementsService = new MovementsService(mockedValidator);
+      movementsValidator.checkForDuplicates.mockReturnValue(null);
+      movementsValidator.checkForBalanceDiscrepancy.mockReturnValue(validationIssues);
 
       // when
       const { validated, reasons } = movementsService.validate(movements, balances);
 
       // then
-      expect(ValidatorMock.prototype.checkForBalanceDiscrepancy).toHaveBeenCalledWith(movements, balances);
+      expect(movementsValidator.checkForBalanceDiscrepancy).toHaveBeenCalledWith(movements, balances);
       expect(validated).toBe(false);
       expect(reasons).toEqual<ValidationIssueType[]>(validationIssues);
     });
@@ -152,18 +161,15 @@ describe('Movement service', () => {
         { type: ValidationIssueEnum.DUPLICATE_MOVEMENTS, message: 'Test message' },
         { type: ValidationIssueEnum.BALANCE_DISCREPANCY, message: 'Test message' }
       ];
-      const ValidatorMock = vi.fn(MovementsValidator);
-      ValidatorMock.prototype.checkForDuplicates = vi.fn((_) => validationIssues[0]);
-      ValidatorMock.prototype.checkForBalanceDiscrepancy = vi.fn((_, __) => [validationIssues[1]]);
-      const mockedValidator = new ValidatorMock();
-      const movementsService = new MovementsService(mockedValidator);
+      movementsValidator.checkForDuplicates.mockReturnValue(validationIssues[0]);
+      movementsValidator.checkForBalanceDiscrepancy.mockReturnValue([validationIssues[1]]);
 
       // when
       const { validated, reasons } = movementsService.validate(movements, balances);
 
       // then
-      expect(ValidatorMock.prototype.checkForDuplicates).toHaveBeenCalledWith(movements);
-      expect(ValidatorMock.prototype.checkForBalanceDiscrepancy).toHaveBeenCalledWith(movements, balances);
+      expect(movementsValidator.checkForDuplicates).toHaveBeenCalledWith(movements);
+      expect(movementsValidator.checkForBalanceDiscrepancy).toHaveBeenCalledWith(movements, balances);
       expect(validated).toBe(false);
       expect(reasons).toEqual<ValidationIssueType[]>(validationIssues);
     });
