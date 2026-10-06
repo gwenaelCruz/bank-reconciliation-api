@@ -1,12 +1,12 @@
-import MovementType from '#app/movements/types/movement.type.js';
-import BalanceType from '#app/movements/types/balance.type.js';
 import toCentHelper from '#app/movements/helpers/to-cent.helper.js';
-import ValidationIssueType from "#app/movements/types/validation-issue.type.js";
+import { ValidationIssueType } from "#app/movements/types/validation-issue.type.js";
 import ValidationIssueEnum from "#app/movements/enums/validation-issue.enum.js";
 import {Injectable} from "@nestjs/common";
+import {MovementDto} from "#app/movements/dto/movement.dto.js";
+import {BalanceDto} from "#app/movements/dto/balance.dto.js";
 
 @Injectable()
-class MovementsValidator {
+export class MovementsValidator {
   public checkForDuplicates(movements: { id: number }[]): ValidationIssueType|null {
     const occurrences: { [key: string]: number } = {};
     movements.forEach(({ id }) => {
@@ -27,22 +27,22 @@ class MovementsValidator {
   }
 
   public checkForBalanceDiscrepancy(
-    movements: MovementType[],
-    balances: BalanceType[],
+    movements: MovementDto[],
+    balances: BalanceDto[],
   ): ValidationIssueType[] {
     const validationIssues: ValidationIssueType[] = [];
     const sortedMovements = movements.toSorted((first, second) => first.date.getTime() - second.date.getTime());
     const sortedBalances = balances.toSorted((first, second) => first.date.getTime() - second.date.getTime());
 
     sortedBalances
-      .forEach((balance: BalanceType, index: number) => {
+      .forEach((balance: BalanceDto, index: number) => {
         if (index === 0) {
           return;
         }
         const periodStart = sortedBalances[index - 1].date;
         const balanceStart = sortedBalances[index - 1].balance;
         const total = sortedMovements
-          .filter((movement: MovementType) => movement.date <= balance.date && movement.date > periodStart)
+          .filter((movement: MovementDto) => movement.date <= balance.date && movement.date > periodStart)
           .reduce(
             (previousValue, movement) =>
               previousValue + toCentHelper(movement.amount), // Convert values to cents to avoid float calculation issues
@@ -66,7 +66,7 @@ class MovementsValidator {
         }
       });
     const lastPeriodEnd = sortedBalances[balances.length - 1]?.date;
-    const uncheckedMovements = sortedMovements.filter((movement: MovementType) =>
+    const uncheckedMovements = sortedMovements.filter((movement: MovementDto) =>
       lastPeriodEnd ? movement.date > lastPeriodEnd || movement.date <= sortedBalances[0].date : true,
     );
     if (uncheckedMovements.length > 0) {
@@ -74,7 +74,7 @@ class MovementsValidator {
         this.getValidationIssue(
           ValidationIssueEnum.UNCHECKED_MOVEMENTS,
           {
-            ids: uncheckedMovements.map((movement: MovementType) =>
+            ids: uncheckedMovements.map((movement: MovementDto) =>
               movement.id.toString(),
             )
           }
@@ -115,5 +115,3 @@ class MovementsValidator {
     }
   }
 }
-
-export default MovementsValidator;

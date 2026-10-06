@@ -1,9 +1,9 @@
-import MovementsValidator from "#app/movements/validators/movements.validator.js";
-import MovementType from "#app/movements/types/movement.type.js";
-import BalanceType from "#app/movements/types/balance.type.js";
+import { MovementsValidator } from "#app/movements/validators/movements.validator.js";
 import randomIntHelper from "../helpers/random-int.helper.js";
 import toCentHelper from "#app/movements/helpers/to-cent.helper.js";
 import ValidationIssueEnum from "#app/movements/enums/validation-issue.enum.js";
+import { MovementDto } from "#app/movements/dto/movement.dto.js";
+import { BalanceDto } from "#app/movements/dto/balance.dto.js";
 
 describe('Movements validator', () => {
   const movementsValidator = new MovementsValidator();
@@ -230,14 +230,14 @@ describe('Movements validator', () => {
       },
     );
     it('Should pass validation with random values', () => {
-      const movements: MovementType[] = [];
+      const movements: MovementDto[] = [];
       const referenceDate = new Date();
       // Create random positive or negative amount in cents
       const getRandomAmount = () => parseFloat(
         ((Math.random() < 0.5 ? 1 : -1) * randomIntHelper(5) * Math.random() * 10)
           .toFixed(2)
       );
-      const balances: BalanceType[] = [
+      const balances: BalanceDto[] = [
         {
           balance: getRandomAmount(),
           date: new Date(),

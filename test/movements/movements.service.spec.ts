@@ -1,7 +1,7 @@
-import MovementsService from '#app/movements/movements.service.js';
-import MovementsValidator from '#app/movements/validators/movements.validator.js';
+import { MovementsService } from '#app/movements/movements.service.js';
+import { MovementsValidator } from '#app/movements/validators/movements.validator.js';
 import ValidationIssueEnum from "#app/movements/enums/validation-issue.enum.js";
-import ValidationIssueType from "#app/movements/types/validation-issue.type.js";
+import { ValidationIssueType } from "#app/movements/types/validation-issue.type.js";
 import {Test, TestingModule} from "@nestjs/testing";
 import {Mocked} from "vitest";
 

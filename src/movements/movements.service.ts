@@ -1,16 +1,16 @@
-import MovementType from '#app/movements/types/movement.type.js';
-import BalanceType from '#app/movements/types/balance.type.js';
-import MovementsValidator from '#app/movements/validators/movements.validator.js';
-import ValidationIssueType from "#app/movements/types/validation-issue.type.js";
+import { MovementsValidator } from '#app/movements/validators/movements.validator.js';
+import { ValidationIssueType } from "#app/movements/types/validation-issue.type.js";
 import {Injectable} from "@nestjs/common";
+import {MovementDto} from "#app/movements/dto/movement.dto.js";
+import {BalanceDto} from "#app/movements/dto/balance.dto.js";
 
 @Injectable()
-class MovementsService {
+export class MovementsService {
   constructor(private validator: MovementsValidator) {}
 
   public validate(
-    movements: MovementType[],
-    balances: BalanceType[],
+    movements: MovementDto[],
+    balances: BalanceDto[],
   ): { validated: boolean; reasons: ValidationIssueType[] } {
     const reasons: ValidationIssueType[] = [];
     const duplicateError = this.validator.checkForDuplicates(movements);
@@ -22,5 +22,3 @@ class MovementsService {
     return { validated: reasons.length === 0, reasons };
   }
 }
-
-export default MovementsService;

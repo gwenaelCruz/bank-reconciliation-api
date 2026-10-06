@@ -1,11 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule, ObserveInstrument } from '#app/app.module.js';
+import { AppModule } from '#app/app.module.js';
 import {ValidationPipe} from "@nestjs/common";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    instrument: ObserveInstrument,
-  });
+  const app = await NestFactory.create(AppModule, {});
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   await app.listen(process.env.PORT ?? 3000);
 }
