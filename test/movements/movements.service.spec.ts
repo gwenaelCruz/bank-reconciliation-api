@@ -1,9 +1,9 @@
 import { MovementsService } from '#app/movements/movements.service.js';
 import { MovementsValidator } from '#app/movements/validators/movements.validator.js';
 import ValidationIssueEnum from "#app/movements/enums/validation-issue.enum.js";
-import { ValidationIssueType } from "#app/movements/types/validation-issue.type.js";
 import {Test, TestingModule} from "@nestjs/testing";
 import {Mocked} from "vitest";
+import {ValidationIssueDto} from "#app/movements/dto/validation-issue.dto.js";
 
 describe('Movement service', () => {
   let movementsValidator: Mocked<MovementsValidator>;
@@ -103,7 +103,7 @@ describe('Movement service', () => {
       expect(movementsValidator.checkForDuplicates).toHaveBeenCalledWith(movements);
       expect(movementsValidator.checkForBalanceDiscrepancy).toHaveBeenCalledWith(movements, balances);
       expect(validated).toBe(false);
-      expect(reasons).toEqual<ValidationIssueType[]>([validationIssue]);
+      expect(reasons).toEqual<ValidationIssueDto[]>([validationIssue]);
     });
     it('Should fail validation when validation returns balance discrepancy issue', () => {
       const movements = [
@@ -136,7 +136,7 @@ describe('Movement service', () => {
       // then
       expect(movementsValidator.checkForBalanceDiscrepancy).toHaveBeenCalledWith(movements, balances);
       expect(validated).toBe(false);
-      expect(reasons).toEqual<ValidationIssueType[]>(validationIssues);
+      expect(reasons).toEqual<ValidationIssueDto[]>(validationIssues);
     });
     it('Should fail validation when validation returns both duplicate and balance discrepancy issue', () => {
       const movements = [
@@ -171,7 +171,7 @@ describe('Movement service', () => {
       expect(movementsValidator.checkForDuplicates).toHaveBeenCalledWith(movements);
       expect(movementsValidator.checkForBalanceDiscrepancy).toHaveBeenCalledWith(movements, balances);
       expect(validated).toBe(false);
-      expect(reasons).toEqual<ValidationIssueType[]>(validationIssues);
+      expect(reasons).toEqual<ValidationIssueDto[]>(validationIssues);
     });
   });
 });

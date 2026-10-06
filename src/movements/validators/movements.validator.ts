@@ -1,13 +1,13 @@
 import toCentHelper from '#app/movements/helpers/to-cent.helper.js';
-import { ValidationIssueType } from "#app/movements/types/validation-issue.type.js";
 import ValidationIssueEnum from "#app/movements/enums/validation-issue.enum.js";
 import {Injectable} from "@nestjs/common";
 import {MovementDto} from "#app/movements/dto/movement.dto.js";
 import {BalanceDto} from "#app/movements/dto/balance.dto.js";
+import {ValidationIssueDto} from "#app/movements/dto/validation-issue.dto.js";
 
 @Injectable()
 export class MovementsValidator {
-  public checkForDuplicates(movements: { id: number }[]): ValidationIssueType|null {
+  public checkForDuplicates(movements: { id: number }[]): ValidationIssueDto|null {
     const occurrences: { [key: string]: number } = {};
     movements.forEach(({ id }) => {
       occurrences[id] = occurrences[id] ? ++occurrences[id] : 1;
@@ -29,8 +29,8 @@ export class MovementsValidator {
   public checkForBalanceDiscrepancy(
     movements: MovementDto[],
     balances: BalanceDto[],
-  ): ValidationIssueType[] {
-    const validationIssues: ValidationIssueType[] = [];
+  ): ValidationIssueDto[] {
+    const validationIssues: ValidationIssueDto[] = [];
     const sortedMovements = movements.toSorted((first, second) => first.date.getTime() - second.date.getTime());
     const sortedBalances = balances.toSorted((first, second) => first.date.getTime() - second.date.getTime());
 
@@ -93,7 +93,7 @@ export class MovementsValidator {
      actualBalance?: number,
      periodStart?: Date,
      periodEnd?: Date
-    }): ValidationIssueType {
+    }): ValidationIssueDto {
     switch (type) {
       case ValidationIssueEnum.DUPLICATE_MOVEMENTS:
         return {

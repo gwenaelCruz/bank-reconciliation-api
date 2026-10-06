@@ -92,7 +92,11 @@ npm run start:dev
 docker compose up -d
 ```
 
-You can then navigate to http://localhost:3000/
+### Documentation
+
+This project uses [Swagger](https://swagger.io/) for API documentation thanks to the [Swagger NestJS package](https://docs.nestjs.com/openapi/introduction).
+
+You can access the documentation by navigating to http://localhost:3000/doc
 
 ### Testing
 
